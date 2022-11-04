@@ -21,6 +21,7 @@ struct ContentView: View {
                 .tabItem {
                     Label("Featured", systemImage: "star")
                 }
+                .tag(Tab.featured)
 
             LandmarkList()
                 .tabItem {
@@ -33,7 +34,9 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
-            .environmentObject(ModelData())
+        Group {
+            ContentView()
+                .environmentObject(ModelData())
+        }
     }
 }

@@ -41,23 +41,23 @@ struct ContentView: View {
     var body: some View {
         
         NavigationSplitView {
-            Section {
-                List(selection: $navView) {
+            List(selection: $navView) {
+                Section {
                     ForEach(Views.allCases, id: \.self) {view in
                         NavigationLink(value: view, label: {
                             Label("Content \(view.rawValue)", systemImage: "folder")
                         })
                     }
+                } header: {
+                    Text("iCloud")
+                        #if os(iOS)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        #endif
                 }
-                .listStyle(InsetGroupedListStyle())
-            } header: {
-                Text("iCloud")
-                    #if os(iOS)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    #endif
             }
             .navigationTitle("Folders")
+            
         } detail: {
             ZStack {
                 switch (navView) {

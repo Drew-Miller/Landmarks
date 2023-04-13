@@ -7,27 +7,6 @@
 
 import SwiftUI
 
-struct DemoContentView: View {
-    @StateObject private var appState = AppState()
-    @State private var columnVisibility =
-        NavigationSplitViewVisibility.detailOnly
-    
-    var body: some View {
-        Text("Hello, world!")
-//        List(appState.folders) { folder in
-//            Text(folder.title)
-//        }
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-        ContentView()
-            .previewInterfaceOrientation(.landscapeLeft)
-    }
-}
-
 struct ContentView: View {
     enum Views: String, CaseIterable {
         case simple = "Simple"
@@ -108,5 +87,13 @@ struct ContentView: View {
                 }
             }
         }
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+        ContentView()
+            .previewInterfaceOrientation(.landscapeLeft)
     }
 }

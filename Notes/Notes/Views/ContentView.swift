@@ -23,6 +23,8 @@ struct DemoContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+        ContentView()
+            .previewInterfaceOrientation(.landscapeLeft)
     }
 }
 
@@ -35,11 +37,9 @@ struct ContentView: View {
     
     @State var navView: Views? = nil
     
-    @State private var columnVisibility =
-        NavigationSplitViewVisibility.detailOnly
+    @State private var columnVisibility = NavigationSplitViewVisibility.doubleColumn
     
     var body: some View {
-        
         NavigationSplitView {
             List(selection: $navView) {
                 Section {
@@ -50,14 +50,11 @@ struct ContentView: View {
                     }
                 } header: {
                     Text("iCloud")
-                        #if os(iOS)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        #endif
                 }
             }
             .navigationTitle("Folders")
-            
+        } content: {
+            Text("content view")
         } detail: {
             ZStack {
                 switch (navView) {

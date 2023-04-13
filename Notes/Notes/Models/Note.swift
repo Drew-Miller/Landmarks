@@ -7,9 +7,13 @@
 
 import Foundation
 
-struct Note: Identifiable, Hashable {
-    var id: UUID = UUID()
+struct Note: Identifiable, Hashable, Codable {
+    let id: UUID = UUID()
+    let created = Date()
     var folderId: UUID? = nil
-    var title: String
-    var text: String
+    var text: String = ""
+
+    enum CodingKeys: String, CodingKey {
+        case id, created, folderId, text
+    }
 }

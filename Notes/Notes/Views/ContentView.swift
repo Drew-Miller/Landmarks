@@ -16,8 +16,6 @@ struct ContentView: View {
     
     @State var navView: Views? = nil
     
-    @State private var columnVisibility = NavigationSplitViewVisibility.doubleColumn
-    
     var body: some View {
         NavigationSplitView {
             List(selection: $navView) {

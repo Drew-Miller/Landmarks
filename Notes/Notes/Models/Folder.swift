@@ -7,8 +7,12 @@
 
 import Foundation
 
-struct Folder: Identifiable, Hashable {
+struct Folder: Identifiable, Hashable, Codable {
     let id: UUID = UUID()
-    let title: String
-    let notes: [Note]
+    var title: String
+    var notes: [Note]
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, notes
+    }
 }

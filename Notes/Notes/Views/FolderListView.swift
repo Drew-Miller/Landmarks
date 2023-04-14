@@ -19,14 +19,22 @@ struct FolderListView: View {
                 ForEach(folderManager.folders, id: \.self) { folder in
                     NavigationLink(value: folder.id, label: {
                         Label(folder.title, systemImage: "folder")
-                        Spacer()
-                        
-                        if editMode.isEditing && !folder.required {
-                            Image(systemName: "ellipsis.circle")
-                            Divider()
-                        } else if !editMode.isEditing {
-                            Text(String(folder.notes.count))
-                                .padding(.trailing, 24)
+                        HStack {
+                            Spacer()
+                            if editMode.isEditing && !folder.required {
+                                Button {
+                                    
+                                } label: {
+                                    Label("Options", systemImage: "ellipsis.circle")
+                                        .labelStyle(.iconOnly)
+                                }
+                                
+                                Divider()
+                            } else if !editMode.isEditing {
+                                Text(String(folder.notes.count))
+                                    .foregroundColor(.gray)
+                                    //.padding(.trailing, 16)
+                            }
                         }
                     })
                     .disabled(editMode.isEditing && folder.required)
@@ -40,7 +48,7 @@ struct FolderListView: View {
                         }
                     }
                 }
-                .onMove(perform: folderManager.moveFolder(from:to:))
+                .onMove{ from, to in folderManager.moveFolder(from: from, to: to) }
             } header: {
                 Text("My Folders")
             }
@@ -49,8 +57,6 @@ struct FolderListView: View {
         .environment(\.editMode, $editMode)
         .moveDisabled(false)
         .deleteDisabled(true)
-        .background(.regularMaterial)
-        // .toolbarRole(.navigationStack)
         .toolbar {
             // Top Toolbar
             ToolbarItem(placement: .automatic) {

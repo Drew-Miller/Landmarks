@@ -26,6 +26,8 @@ struct NotesApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .background(.regularMaterial)
+                .accentColor(.yellow)
 #if os(macOS)
                 .frame(minWidth: frameSize != nil ? frameSize!.minWidth : 800, minHeight: frameSize != nil ? frameSize!.minHeight : 600)
 #endif

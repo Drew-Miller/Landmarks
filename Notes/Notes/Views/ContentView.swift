@@ -40,17 +40,13 @@ struct ContentView: View {
             // Folder Selection View
             List(selection: $folderId) {
                 Section {
-                    NavigationLink(value: UUID(), label: {
-                        Label("All Notes", systemImage: "folder")
-                    })
-                    
                     ForEach(folderManager.folders, id: \.self) { folder in
                         NavigationLink(value: folder.id, label: {
                             Label(folder.title, systemImage: "folder")
                         })
                     }
                 } header: {
-                    Text("iCloud")
+                    Text("My Folders")
                 }
                 
                 Spacer()
@@ -81,8 +77,19 @@ struct ContentView: View {
                     } header: {
                         Text("Notes")
                     }
-                } 
-                .navigationTitle(folder != nil ? folder!.title : "All Notes")
+                }
+#if os(iOS)
+                .navigationTitle(folder != nil ? folder!.title : "All")
+#endif
+#if os(macOS)
+                .toolbar {
+                    Text("Hello, world!")
+                    Button {
+                    } label: {
+                        Image(systemName: "sidebar.left")
+                    }
+                }
+#endif
             }
         } detail: {
             // Note View

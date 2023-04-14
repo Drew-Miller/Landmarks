@@ -12,7 +12,7 @@ import SwiftUI
 final class FolderManager: ObservableObject {
     @AppStorage("folders") private var foldersData: Data?
     
-    var folders: [Folder] {
+    private var myFolders: [Folder] {
         get {
             if let data = foldersData,
                let savedFolders = try? JSONDecoder().decode([Folder].self, from: data) {
@@ -27,8 +27,14 @@ final class FolderManager: ObservableObject {
         }
     }
     
+    var folders: [Folder] {
+        var defaultOptions = [Folder(title: "All", notes: allNotes)]
+        defaultOptions.insert(contentsOf: myFolders, at: 0)
+        return defaultOptions
+    }
+    
     var allNotes: [Note] {
-        folders.flatMap { $0.notes }
+        myFolders.flatMap { $0.notes }
     }
     
     func allTags() -> Set<String> {
@@ -42,7 +48,7 @@ final class FolderManager: ObservableObject {
     init() {
         if let data = foldersData,
            let savedFolders = try? JSONDecoder().decode([Folder].self, from: data) {
-            folders = savedFolders
+            myFolders = savedFolders
         }
         
         if !folderExists(withTitle: "Notes") {
@@ -51,15 +57,15 @@ final class FolderManager: ObservableObject {
             
             let defaultFolders = [notesFolder]
             
-            if folders.isEmpty {
-                folders = defaultFolders
+            if myFolders.isEmpty {
+                myFolders = defaultFolders
             } else {
-                folders.insert(contentsOf: defaultFolders, at: 0)
+                myFolders.insert(contentsOf: defaultFolders, at: 0)
             }
         }
         
         if let index = folderIndex(withTitle: "Notes") {
-            let notesFolder = folders[index]
+            let notesFolder = myFolders[index]
             guard notesFolder.notes.isEmpty else {
                 return
             }
@@ -69,7 +75,7 @@ final class FolderManager: ObservableObject {
     }
     
     private func folderIndex(withTitle title: String) -> Int? {
-        return folders.firstIndex(where: {
+        return myFolders.firstIndex(where: {
             $0.title.caseInsensitiveCompare(title) == .orderedSame
         })
     }
@@ -79,35 +85,35 @@ final class FolderManager: ObservableObject {
     }
     
     private func getContainingFolder(note: Note, index: Bool = false) -> Folder? {
-        return folders.first(where: { $0.hasNote(note) })
+        return myFolders.first(where: { $0.hasNote(note) })
             
     }
     
     func folder(id: UUID, index: Bool = false) -> Folder? {
-        let folders = folders
+        let folders = myFolders
         return folders.first(where: { $0.id == id })
     }
     
     func addFolder(title: String) {
-        guard folderExists(withTitle: title) else {
+        guard !folderExists(withTitle: title) else {
             return
         }
         
         let newFolder = Folder(title: title, notes: [])
-        folders.append(newFolder)
+        myFolders.append(newFolder)
     }
     
     func deleteFolder(folder: Folder) {
-        if let index = folders.firstIndex(where: { $0.id == folder.id && !$0.required }) {
-            folders.remove(at: index)
+        if let index = myFolders.firstIndex(where: { $0.id == folder.id && !$0.required }) {
+            myFolders.remove(at: index)
         }
     }
     
     func createNote(note: Note) {
         if let index = folderIndex(withTitle: "Notes") {
-            var notesFolder = folders[index]
+            var notesFolder = myFolders[index]
             notesFolder.notes.append(note)
-            folders[index] = notesFolder
+            myFolders[index] = notesFolder
         }
     }
     
@@ -117,9 +123,9 @@ final class FolderManager: ObservableObject {
             return
         }
         
-        if let index = sourceFolder.noteIndex(note.id), let destinationIndex = folders.firstIndex(where: { destination.id == $0.id }) {
+        if let index = sourceFolder.noteIndex(note.id), let destinationIndex = myFolders.firstIndex(where: { destination.id == $0.id }) {
             sourceFolder.notes.remove(at: index)
-            folders[destinationIndex].notes.append(note)
+            myFolders[destinationIndex].notes.append(note)
         }
     }
     
@@ -130,7 +136,7 @@ final class FolderManager: ObservableObject {
             updatedNote.text = text
             updatedNote.modified = Date()
             folder.notes[noteIndex] = updatedNote
-            folders[folderIndex] = folder
+            myFolders[folderIndex] = folder
         }
     }
     
@@ -138,7 +144,7 @@ final class FolderManager: ObservableObject {
         if var folder = getContainingFolder(note: note), let folderIndex = folderIndex(withTitle: folder.title), let noteIndex = folder.noteIndex(note.id) {
             // Note is already in a folder, update the folder
             folder.notes.remove(at: noteIndex)
-            folders[folderIndex] = folder
+            myFolders[folderIndex] = folder
             
             if allNotes.isEmpty {
                 createNote(note: Note())

@@ -8,79 +8,88 @@
 import SwiftUI
 
 struct ContentView: View {
-    enum Views: String, CaseIterable {
-        case simple = "Simple"
-        case navigationStack = "Navigation Stack"
-        case noTitle = "No Title"
+    @StateObject var folderManager = FolderManager()
+    @State var visibility: NavigationSplitViewVisibility = .automatic
+    @State var folderId: UUID?
+    @State var noteId: UUID?
+    
+    var folder: Folder? {
+        if let id = folderId {
+            return folderManager.folder(id: id)
+        }
+        return nil
     }
     
-    @State var navView: Views? = nil
+    var notes: [Note] {
+        if let id = folderId, let folder = folderManager.folder(id: id) {
+            return folder.notes
+        }
+        return folderManager.allNotes
+    }
+    
+    var note: Note? {
+        if let folder = folder, let id = noteId {
+            return folder.note(id)
+        }
+        
+        return !folderManager.allNotes.isEmpty ? folderManager.allNotes[0] : nil
+    }
     
     var body: some View {
-        NavigationSplitView {
-            List(selection: $navView) {
+        NavigationSplitView(columnVisibility: $visibility) {
+            // Folder Selection View
+            List(selection: $folderId) {
                 Section {
-                    ForEach(Views.allCases, id: \.self) {view in
-                        NavigationLink(value: view, label: {
-                            Label("Content \(view.rawValue)", systemImage: "folder")
+                    NavigationLink(value: UUID(), label: {
+                        Label("All Notes", systemImage: "folder")
+                    })
+                    
+                    ForEach(folderManager.folders, id: \.self) { folder in
+                        NavigationLink(value: folder.id, label: {
+                            Label(folder.title, systemImage: "folder")
                         })
                     }
                 } header: {
                     Text("iCloud")
                 }
+                
+                Spacer()
+                
+                Button {
+                    folderManager.addFolder(title: "New Folder")
+                } label: {
+                    Label("New Folder", systemImage: "plus")
+                }
             }
             .navigationTitle("Folders")
         } content: {
-            Text("content view")
-        } detail: {
+            // Notes Selection View
             ZStack {
-                switch (navView) {
+                if notes.isEmpty {
+                    Text("No Notes")
+                }
                 
-                case .simple:
-                    Text("Content Simple Links")
-                    
-                case .navigationStack:
-                    NavigationStack {
-                        List {
-                            NavigationLink {
-                                Text("Hello, world!")
-                            } label: {
-                                Text("Hello, world!")
-                            }
-                            
-                            NavigationLink {
+                List(selection: $noteId) {
+                    Section {
+                        ForEach(notes, id: \.self) { note in
+                            NavigationLink(value: note.id, label: {
                                 VStack {
-                                    Text("Nested Links")
-                                    
-                                    NavigationLink {
-                                        Text("Inside nested link")
-                                    } label: {
-                                        Text("Go to nested link")
-                                    }
+                                    Text(note.title)
                                 }
-                                .navigationTitle("Nested Links")
-                                
-                            } label: {
-                                Text("Nested Links")
-                            }
+                            })
                         }
+                    } header: {
+                        Text("Notes")
                     }
-                    .navigationTitle("Navigation Stack")
-                    
-                case .noTitle:
-                    NavigationStack {
-                        List {
-                            NavigationLink {
-                                Text("Hello, world!")
-                            } label: {
-                                Text("Hello, world!")
-                            }
-                        }
-                    }
-                    // 'Back' by default
-                    .navigationTitle("")
-                    
-                default:
+                } 
+                .navigationTitle(folder != nil ? folder!.title : "All Notes")
+            }
+        } detail: {
+            // Note View
+            ZStack {
+                if let note = note {
+                    NoteView(note: .constant(note))
+                } else {
                     Text("Hello, world!")
                 }
             }

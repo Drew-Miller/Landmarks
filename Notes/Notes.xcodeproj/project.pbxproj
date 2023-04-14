@@ -17,7 +17,7 @@
 		569177B629E0C676002608B5 /* NoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569177B529E0C676002608B5 /* NoteView.swift */; };
 		569177B829E0C68C002608B5 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569177B729E0C68C002608B5 /* Note.swift */; };
 		569177BD29E0D0EE002608B5 /* Folder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569177BC29E0D0EE002608B5 /* Folder.swift */; };
-		569177BF29E0D183002608B5 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569177BE29E0D183002608B5 /* AppState.swift */; };
+		569177BF29E0D183002608B5 /* FolderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569177BE29E0D183002608B5 /* FolderManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5601064F29E789F400A9C22D /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		5691778429E0C0BA002608B5 /* Notes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5691778729E0C0BA002608B5 /* NotesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesApp.swift; sourceTree = "<group>"; };
 		5691778929E0C0BA002608B5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -52,7 +53,7 @@
 		569177B529E0C676002608B5 /* NoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteView.swift; sourceTree = "<group>"; };
 		569177B729E0C68C002608B5 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		569177BC29E0D0EE002608B5 /* Folder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Folder.swift; sourceTree = "<group>"; };
-		569177BE29E0D183002608B5 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		569177BE29E0D183002608B5 /* FolderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +84,7 @@
 		5691777B29E0C0BA002608B5 = {
 			isa = PBXGroup;
 			children = (
+				5601064F29E789F400A9C22D /* TODO.md */,
 				5691778629E0C0BA002608B5 /* Notes */,
 				5691779829E0C0BD002608B5 /* NotesTests */,
 				569177A229E0C0BD002608B5 /* NotesUITests */,
@@ -150,9 +152,9 @@
 		569177BB29E0C69E002608B5 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				569177BE29E0D183002608B5 /* AppState.swift */,
 				569177B729E0C68C002608B5 /* Note.swift */,
 				569177BC29E0D0EE002608B5 /* Folder.swift */,
+				569177BE29E0D183002608B5 /* FolderManager.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -290,7 +292,7 @@
 				5691778A29E0C0BA002608B5 /* ContentView.swift in Sources */,
 				569177BD29E0D0EE002608B5 /* Folder.swift in Sources */,
 				5691778829E0C0BA002608B5 /* NotesApp.swift in Sources */,
-				569177BF29E0D183002608B5 /* AppState.swift in Sources */,
+				569177BF29E0D183002608B5 /* FolderManager.swift in Sources */,
 				569177B629E0C676002608B5 /* NoteView.swift in Sources */,
 				569177B829E0C68C002608B5 /* Note.swift in Sources */,
 			);

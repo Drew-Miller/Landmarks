@@ -14,13 +14,13 @@ final class FolderManager: ObservableObject {
     
     private var myFolders: [Folder] {
         get { return JSONData.decodeArray(data: foldersData, class: Folder.self) }
-        set { return JSONData.encode(encode: newValue) { encoded in foldersData = encoded} }
+        set { JSONData.encode(encode: newValue) { encoded in foldersData = encoded} }
     }
     
     var folders: [Folder] {
-        var defaultOptions = [Folder(title: "All", notes: allNotes)]
-        defaultOptions.insert(contentsOf: myFolders, at: 0)
-        return defaultOptions
+        var folders = [Folder(title: "All Notes", notes: allNotes, required: true)]
+        folders.append(contentsOf: myFolders)
+        return folders
     }
     
     var allNotes: [Note] {
@@ -55,7 +55,9 @@ final class FolderManager: ObservableObject {
         }
         
         if let index = folderIndex(withTitle: "Notes") {
-            let notesFolder = myFolders[index]
+            var notesFolder = myFolders[index]
+            notesFolder.required = true
+            myFolders[index] = notesFolder
             guard notesFolder.notes.isEmpty else {
                 return
             }
@@ -79,7 +81,7 @@ final class FolderManager: ObservableObject {
             
     }
     
-    func folder(id: UUID, index: Bool = false) -> Folder? {
+    func folder(id: UUID) -> Folder? {
         let folders = myFolders
         return folders.first(where: { $0.id == id })
     }
@@ -91,6 +93,12 @@ final class FolderManager: ObservableObject {
         
         let newFolder = Folder(title: title, notes: [])
         myFolders.append(newFolder)
+    }
+    
+    func onDelete(indices: IndexSet) {
+        myFolders.remove(atOffsets: indices.filteredIndexSet {
+            !folders[$0].required
+        })
     }
     
     func deleteFolder(folder: Folder) {

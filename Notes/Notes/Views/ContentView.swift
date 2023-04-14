@@ -37,37 +37,7 @@ struct ContentView: View {
     
     var body: some View {
         NavigationSplitView(columnVisibility: $visibility) {
-            // Folder Selection View
-            List(selection: $folderId) {
-                Section {
-                    ForEach(folderManager.folders, id: \.self) { folder in
-                        Label(folder.title, systemImage: "folder")
-
-//                        NavigationLink(value: folder.id, label: {
-//                            Label(folder.title, systemImage: "folder")
-//                        })
-                    }
-                } header: {
-                    Text("My Folders")
-                } footer: {
-                    Button {
-                        folderManager.addFolder(title: "New Folder")
-                    } label: {
-                        Label("New Folder", systemImage: "plus")
-                    }
-                }
-            }
-            .navigationTitle("Folders")
-            .listStyle(.insetGrouped)
-#if os(macOS)
-            //            .toolbar {
-            //                Text("Hello, world!")
-            //                Button {
-            //                } label: {
-            //                    Image(systemName: "sidebar.left")
-            //                }
-            //            }
-#endif
+            FolderListView(folderId: $folderId)
         } content: {
             // Notes Selection View
             ZStack {
@@ -89,8 +59,7 @@ struct ContentView: View {
                     }
                 }
 #if os(iOS)
-                // .navigationTitle(folder?.title ?? String())
-                .navigationTitle("Folder")
+                .navigationTitle(folder?.title ?? "All")
 #endif
             }
         } detail: {
@@ -103,9 +72,11 @@ struct ContentView: View {
                 }
             }
         }
+        .background(.regularMaterial)
     }
 }
 
+#if DEBUG
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
@@ -113,3 +84,4 @@ struct ContentView_Previews: PreviewProvider {
             .previewInterfaceOrientation(.landscapeLeft)
     }
 }
+#endif

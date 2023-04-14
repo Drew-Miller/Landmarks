@@ -14,7 +14,7 @@ struct Folder: Identifiable, Hashable, Codable {
     var required = false
 
     enum CodingKeys: String, CodingKey {
-        case id, title, notes
+        case id, title, notes, required
     }
     
     func note(_ id: UUID) -> Note? {

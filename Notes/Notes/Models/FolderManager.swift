@@ -95,8 +95,8 @@ final class FolderManager: ObservableObject {
         myFolders.append(newFolder)
     }
     
-    func moveFolder(indices: IndexSet, to destination: Int) {
-        myFolders.move(fromOffsets: indices.filteredIndexSet {
+    func moveFolder(from source: IndexSet, to destination: Int) {
+        myFolders.move(fromOffsets: source.filteredIndexSet {
             !folders[$0].required
         }, toOffset: destination)
     }

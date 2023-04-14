@@ -30,8 +30,7 @@ struct FolderListView: View {
                         }
                     })
                     .disabled(editMode.isEditing && folder.required)
-                    .deleteDisabled(!editMode.isEditing || folder.required)
-                    .moveDisabled(!editMode.isEditing || folder.required)
+                    .moveDisabled(folder.required)
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
                             folderManager.deleteFolder(folder: folder)
@@ -41,9 +40,7 @@ struct FolderListView: View {
                         }
                     }
                 }
-                .onMove { source, to in
-                    folderManager.moveFolder(indices: source, to: to)
-                }
+                .onMove(perform: folderManager.moveFolder(from:to:))
             } header: {
                 Text("My Folders")
             }
@@ -51,11 +48,13 @@ struct FolderListView: View {
         .navigationTitle("Folders")
         .environment(\.editMode, $editMode)
         .moveDisabled(false)
-        .deleteDisabled(false)
+        .deleteDisabled(true)
         .background(.regularMaterial)
-        .toolbarRole(.navigationStack)
+        // .toolbarRole(.navigationStack)
         .toolbar {
+            // Top Toolbar
             ToolbarItem(placement: .automatic) {
+                // Edit Button
                 if editMode.isEditing {
                     Button(role: .cancel) {
                         withAnimation {
@@ -76,12 +75,13 @@ struct FolderListView: View {
                             .labelStyle(.titleOnly)
                     }
                 }
-                
             }
             
+            // Bottom Toolbar
             ToolbarItemGroup(placement: .bottomBar) {
+                // Create new folder
                 Button {
-                    folderManager.addFolder(title: "New Folder")
+                    folderManager.addFolder(title: "New Folder \(folderManager.folders.count)")
                 } label: {
                     Label("New Folder", systemImage: "folder.badge.plus")
                 }

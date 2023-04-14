@@ -95,10 +95,10 @@ final class FolderManager: ObservableObject {
         myFolders.append(newFolder)
     }
     
-    func onDelete(indices: IndexSet) {
-        myFolders.remove(atOffsets: indices.filteredIndexSet {
+    func moveFolder(indices: IndexSet, to destination: Int) {
+        myFolders.move(fromOffsets: indices.filteredIndexSet {
             !folders[$0].required
-        })
+        }, toOffset: destination)
     }
     
     func deleteFolder(folder: Folder) {

@@ -24,7 +24,6 @@ struct FolderListView: View {
                         if editMode.isEditing && !folder.required {
                             Image(systemName: "ellipsis.circle")
                             Divider()
-                            Image(systemName: "line.3.horizontal")
                         } else if !editMode.isEditing {
                             Text(String(folder.notes.count))
                                 .padding(.trailing, 24)
@@ -32,6 +31,7 @@ struct FolderListView: View {
                     })
                     .disabled(editMode.isEditing && folder.required)
                     .deleteDisabled(!editMode.isEditing || folder.required)
+                    .moveDisabled(!editMode.isEditing || folder.required)
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
                             folderManager.deleteFolder(folder: folder)
@@ -41,15 +41,18 @@ struct FolderListView: View {
                         }
                     }
                 }
+                .onMove { source, to in
+                    folderManager.moveFolder(indices: source, to: to)
+                }
             } header: {
                 Text("My Folders")
             }
         }
         .navigationTitle("Folders")
-        .background(.regularMaterial)
         .environment(\.editMode, $editMode)
         .moveDisabled(false)
         .deleteDisabled(false)
+        .background(.regularMaterial)
         .toolbarRole(.navigationStack)
         .toolbar {
             ToolbarItem(placement: .automatic) {
@@ -61,6 +64,7 @@ struct FolderListView: View {
                     } label: {
                         Label("Done", systemImage: "check")
                             .labelStyle(.titleOnly)
+                            .fontWeight(.bold)
                     }
                 } else {
                     Button {

@@ -41,31 +41,32 @@ struct ContentView: View {
             List(selection: $folderId) {
                 Section {
                     ForEach(folderManager.folders, id: \.self) { folder in
-                        NavigationLink(value: folder.id, label: {
-                            Label(folder.title, systemImage: "folder")
-                        })
+                        Label(folder.title, systemImage: "folder")
+
+//                        NavigationLink(value: folder.id, label: {
+//                            Label(folder.title, systemImage: "folder")
+//                        })
                     }
                 } header: {
                     Text("My Folders")
-                }
-                
-                Spacer()
-                
-                Button {
-                    folderManager.addFolder(title: "New Folder")
-                } label: {
-                    Label("New Folder", systemImage: "plus")
+                } footer: {
+                    Button {
+                        folderManager.addFolder(title: "New Folder")
+                    } label: {
+                        Label("New Folder", systemImage: "plus")
+                    }
                 }
             }
             .navigationTitle("Folders")
+            .listStyle(.insetGrouped)
 #if os(macOS)
-                .toolbar {
-                    Text("Hello, world!")
-                    Button {
-                    } label: {
-                        Image(systemName: "sidebar.left")
-                    }
-                }
+            //            .toolbar {
+            //                Text("Hello, world!")
+            //                Button {
+            //                } label: {
+            //                    Image(systemName: "sidebar.left")
+            //                }
+            //            }
 #endif
         } content: {
             // Notes Selection View
@@ -88,7 +89,8 @@ struct ContentView: View {
                     }
                 }
 #if os(iOS)
-                .navigationTitle(folder != nil ? folder!.title : "All")
+                // .navigationTitle(folder?.title ?? String())
+                .navigationTitle("Folder")
 #endif
             }
         } detail: {

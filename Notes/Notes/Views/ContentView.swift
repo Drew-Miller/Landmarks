@@ -58,6 +58,15 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Folders")
+#if os(macOS)
+                .toolbar {
+                    Text("Hello, world!")
+                    Button {
+                    } label: {
+                        Image(systemName: "sidebar.left")
+                    }
+                }
+#endif
         } content: {
             // Notes Selection View
             ZStack {
@@ -80,15 +89,6 @@ struct ContentView: View {
                 }
 #if os(iOS)
                 .navigationTitle(folder != nil ? folder!.title : "All")
-#endif
-#if os(macOS)
-                .toolbar {
-                    Text("Hello, world!")
-                    Button {
-                    } label: {
-                        Image(systemName: "sidebar.left")
-                    }
-                }
 #endif
             }
         } detail: {

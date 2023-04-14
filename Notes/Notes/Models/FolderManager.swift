@@ -13,18 +13,8 @@ final class FolderManager: ObservableObject {
     @AppStorage("folders") private var foldersData: Data?
     
     private var myFolders: [Folder] {
-        get {
-            if let data = foldersData,
-               let savedFolders = try? JSONDecoder().decode([Folder].self, from: data) {
-                return savedFolders
-            }
-            return []
-        }
-        set {
-            if let encoded = try? JSONEncoder().encode(newValue) {
-                foldersData = encoded
-            }
-        }
+        get { return JSONData.decodeArray(data: foldersData, class: Folder.self) }
+        set { return JSONData.encode(encode: newValue) { encoded in foldersData = encoded} }
     }
     
     var folders: [Folder] {

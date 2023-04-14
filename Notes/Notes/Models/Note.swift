@@ -12,6 +12,10 @@ struct Note: Identifiable, Hashable, Codable {
     var modified: Date = Date()
     var text: String = ""
     
+    enum CodingKeys: String, CodingKey {
+        case id, modified, text
+    }
+    
     var title: String {
         let firstLine = text.split(separator: "\n").first ?? ""
         let truncated = String(firstLine.prefix(20))
@@ -29,9 +33,5 @@ struct Note: Identifiable, Hashable, Codable {
         }
         
         return tags
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case id, modified, text
     }
 }

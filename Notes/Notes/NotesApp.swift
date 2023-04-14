@@ -9,27 +9,17 @@ import SwiftUI
 
 @main
 struct NotesApp: App {
-#if os (macOS)    
+#if os (macOS)
     struct FrameSize: Codable {
-        var minWidth: Int
-        var minHeight: Int
+        var minWidth: CGFloat
+        var minHeight: CGFloat
     }
     
     @AppStorage("frameSize") private var frameSizeData: Data?
     
     private var frameSize: FrameSize? {
-        get {
-            if let data = frameSizeData,
-               let frameSize = try? JSONDecoder().decode(FrameSize.self, from: data) {
-                return frameSize
-            }
-            return nil
-        }
-        set {
-            if let encoded = try? JSONEncoder().encode(newValue) {
-                frameSizeData = encoded
-            }
-        }
+        get { return JSONData.decode(data: frameSizeData, class: FrameSize.self) }
+        set { return JSONData.encode(encode: newValue) { encoded in frameSizeData = encoded} }
     }
 #endif
     
@@ -37,7 +27,7 @@ struct NotesApp: App {
         WindowGroup {
             ContentView()
 #if os(macOS)
-                .frame(minWidth: frameSizeData ? frameSizeData.minWidth : 800, minHeight: frameSizeData ? frameSizeData.maxWidth : 600)
+                .frame(minWidth: frameSize != nil ? frameSize!.minWidth : 800, minHeight: frameSize != nil ? frameSize!.minHeight : 600)
 #endif
         }
     }

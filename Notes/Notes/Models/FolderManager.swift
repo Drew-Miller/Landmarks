@@ -120,7 +120,14 @@ final class FolderManager: ObservableObject {
         }
     }
     
-    func createNote(note: Note) {
+    func createNote(note: Note, folder: Folder? = nil) {
+        if let folder = folder, let index = folderIndex(withTitle: folder.title) {
+            var notesFolder = myFolders[index]
+            notesFolder.notes.append(note)
+            myFolders[index] = notesFolder
+            return
+        }
+        
         if let index = folderIndex(withTitle: "Notes") {
             var notesFolder = myFolders[index]
             notesFolder.notes.append(note)

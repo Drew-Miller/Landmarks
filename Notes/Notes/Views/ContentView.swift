@@ -9,7 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var folderManager = FolderManager()
-    @State var visibility: NavigationSplitViewVisibility = .automatic
+    @State var visibility: NavigationSplitViewVisibility = .doubleColumn
+    @State var search = ""
+
     @State var folderId: UUID?
     @State var noteId: UUID?
     
@@ -35,10 +37,6 @@ struct ContentView: View {
         return !folderManager.allNotes.isEmpty ? folderManager.allNotes[0] : nil
     }
     
-    init() {
-        
-    }
-    
     var body: some View {
         NavigationSplitView(columnVisibility: $visibility) {
             FolderListView(folderId: $folderId)
@@ -50,10 +48,8 @@ struct ContentView: View {
                     Text("No Notes")
                 }
                 
-                if let folderTitle = folder?.title ?? "All" {
-                    NoteListView(folderTitle: folderTitle, notes: .constant(notes), noteId: $noteId)
-                        .environmentObject(folderManager)
-                }
+                NoteListView(folderTitle: folder?.title ?? "All Notes", notes: notes, noteId: $noteId)
+                    .environmentObject(folderManager)
             }
         } detail: {
             // Note View
@@ -65,6 +61,7 @@ struct ContentView: View {
                 }
             }
         }
+        .searchable(text: $search)
     }
 }
 

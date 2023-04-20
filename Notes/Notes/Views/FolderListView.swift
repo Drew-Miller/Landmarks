@@ -29,7 +29,7 @@ struct FolderListView: View {
         }
         .navigationTitle("Folders")
         .environment(\.editMode, $editMode)
-        //.moveDisabled(false)
+        .moveDisabled(false)
         .deleteDisabled(true)
         .toolbar {
             // Top Toolbar

@@ -35,6 +35,10 @@ struct ContentView: View {
         return !folderManager.allNotes.isEmpty ? folderManager.allNotes[0] : nil
     }
     
+    init() {
+        
+    }
+    
     var body: some View {
         NavigationSplitView(columnVisibility: $visibility) {
             FolderListView(folderId: $folderId)
@@ -46,11 +50,8 @@ struct ContentView: View {
                     Text("No Notes")
                 }
                 
-                if let folderTitle = folder?.title {
+                if let folderTitle = folder?.title ?? "All" {
                     NoteListView(folderTitle: folderTitle, notes: .constant(notes), noteId: $noteId)
-                        .environmentObject(folderManager)
-                } else {
-                    NoteListView(folderTitle: "All", notes: .constant(notes), noteId: $noteId)
                         .environmentObject(folderManager)
                 }
             }

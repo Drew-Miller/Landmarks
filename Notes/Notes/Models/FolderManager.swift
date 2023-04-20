@@ -95,6 +95,14 @@ final class FolderManager: ObservableObject {
         myFolders.append(newFolder)
     }
     
+    func renameFolder(folder: Folder, name: String) {
+        if let folderIndex = folderIndex(withTitle: folder.title) {
+            var folder = folder
+            folder.title = name
+            myFolders[folderIndex] = folder
+        }
+    }
+    
     func moveFolder(from source: IndexSet, to destination: Int) {
         myFolders.move(fromOffsets: source.filteredIndexSet {
             !folders[$0].required

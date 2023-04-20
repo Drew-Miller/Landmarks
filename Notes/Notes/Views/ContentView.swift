@@ -38,6 +38,7 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView(columnVisibility: $visibility) {
             FolderListView(folderId: $folderId)
+                .environmentObject(folderManager)
         } content: {
             // Notes Selection View
             ZStack {

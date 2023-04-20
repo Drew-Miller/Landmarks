@@ -20,6 +20,7 @@
 		569177BF29E0D183002608B5 /* FolderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569177BE29E0D183002608B5 /* FolderManager.swift */; };
 		56C6088D29E9CB0300FA10C0 /* JSONData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C6088C29E9CB0300FA10C0 /* JSONData.swift */; };
 		56C6088F29E9EC7300FA10C0 /* FolderListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C6088E29E9EC7300FA10C0 /* FolderListView.swift */; };
+		56C6089129EA28EA00FA10C0 /* FolderListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C6089029EA28EA00FA10C0 /* FolderListItemView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 		569177BE29E0D183002608B5 /* FolderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderManager.swift; sourceTree = "<group>"; };
 		56C6088C29E9CB0300FA10C0 /* JSONData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONData.swift; sourceTree = "<group>"; };
 		56C6088E29E9EC7300FA10C0 /* FolderListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderListView.swift; sourceTree = "<group>"; };
+		56C6089029EA28EA00FA10C0 /* FolderListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderListItemView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,6 +152,7 @@
 				5691778929E0C0BA002608B5 /* ContentView.swift */,
 				569177B529E0C676002608B5 /* NoteView.swift */,
 				56C6088E29E9EC7300FA10C0 /* FolderListView.swift */,
+				56C6089029EA28EA00FA10C0 /* FolderListItemView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -299,6 +302,7 @@
 				56C6088D29E9CB0300FA10C0 /* JSONData.swift in Sources */,
 				56C6088F29E9EC7300FA10C0 /* FolderListView.swift in Sources */,
 				569177BD29E0D0EE002608B5 /* Folder.swift in Sources */,
+				56C6089129EA28EA00FA10C0 /* FolderListItemView.swift in Sources */,
 				5691778829E0C0BA002608B5 /* NotesApp.swift in Sources */,
 				569177BF29E0D183002608B5 /* FolderManager.swift in Sources */,
 				569177B629E0C676002608B5 /* NoteView.swift in Sources */,

@@ -20,14 +20,16 @@ struct FolderListView: View {
                     FolderListItemView(editMode: $editMode, folder: folder)
                         .environmentObject(folderManager)
                 }
-                .onMove{ from, to in folderManager.moveFolder(from: from, to: to) }
+                .onMove { from, to in
+                    folderManager.moveFolder(from: from, to: to)
+                }
             } header: {
                 Text("My Folders")
             }
         }
         .navigationTitle("Folders")
         .environment(\.editMode, $editMode)
-        .moveDisabled(false)
+        //.moveDisabled(false)
         .deleteDisabled(true)
         .toolbar {
             // Top Toolbar
@@ -59,7 +61,7 @@ struct FolderListView: View {
             ToolbarItemGroup(placement: .bottomBar) {
                 // Create new folder
                 Button {
-                    folderManager.addFolder(title: "New Folder \(folderManager.folders.count)")
+                    folderManager.addFolder(title: "New Folder")
                 } label: {
                     Label("New Folder", systemImage: "folder.badge.plus")
                 }
@@ -67,63 +69,6 @@ struct FolderListView: View {
                 Spacer()
             }
         }
-    }
-}
-
-struct FolderItemView: View {
-    @StateObject var folderManager = FolderManager()
-    @Binding var editMode: EditMode
-    @State var isPresenting = false
-    @Binding var folder: Folder
-    
-    var body: some View {
-        NavigationLink(value: folder.id, label: {
-            Label(folder.title, systemImage: "folder")
-            HStack {
-                Spacer()
-                if editMode.isEditing && !folder.required {
-                    Menu {
-                        // Rename
-                        Button {
-                            isPresenting = true
-                        } label: {
-                            Label("Rename", systemImage: "pencil")
-                        }
-                        
-                        // Delete
-                        Button {
-                            folderManager.deleteFolder(folder: folder)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    } label: {
-                        Label("Options", systemImage: "ellipsis.circle")
-                            .labelStyle(.iconOnly)
-                    }
-                    Divider()
-                } else if !editMode.isEditing {
-                    Text(String(folder.notes.count))
-                        .foregroundColor(.gray)
-                }
-            }
-        })
-        .disabled(editMode.isEditing && folder.required)
-        .moveDisabled(folder.required)
-        .swipeActions(edge: .trailing) {
-            Button(role: .destructive) {
-                folderManager.deleteFolder(folder: folder)
-            } label: {
-                Label("Delete", systemImage: "trash")
-                    .labelStyle(.iconOnly)
-            }
-        }
-        .alert("Rename Folder :2", isPresented: $isPresenting, actions: {
-            // Any view other than Button would be ignored
-            TextField("Rename Folder :3", text: .constant(folder.title))
-        }, message: {
-            // Any view other than Text would be ignored
-            TextField("Rename Folder", text: .constant(folder.title))
-        })
     }
 }
 

@@ -17,8 +17,12 @@ final class FolderManager: ObservableObject {
         set { JSONData.encode(encode: newValue) { encoded in foldersData = encoded} }
     }
     
+    private var defaultFolders: [Folder] {
+        return [Folder(title: "All Notes", notes: allNotes, required: true)]
+    }
+    
     var folders: [Folder] {
-        var folders = [Folder(title: "All Notes", notes: allNotes, required: true)]
+        var folders = defaultFolders
         folders.append(contentsOf: myFolders)
         return folders
     }
@@ -104,9 +108,10 @@ final class FolderManager: ObservableObject {
     }
     
     func moveFolder(from source: IndexSet, to destination: Int) {
-        myFolders.move(fromOffsets: source.filteredIndexSet {
-            !folders[$0].required
-        }, toOffset: destination)
+        let modifiedSource = IndexSet(source.map { $0 - defaultFolders.count }) // remove the default folders from the indices
+        myFolders.move(fromOffsets: modifiedSource.filteredIndexSet {
+            !myFolders[$0].required
+        }, toOffset: destination - defaultFolders.count) // subtract the default folders indices
     }
     
     func deleteFolder(folder: Folder) {

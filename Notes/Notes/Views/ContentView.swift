@@ -21,7 +21,7 @@ struct ContentView: View {
     }
     
     var notes: [Note] {
-        if let id = folderId, let folder = folderManager.folder(id: id) {
+        if let folder = folder {
             return folder.notes
         }
         return folderManager.allNotes
@@ -46,22 +46,13 @@ struct ContentView: View {
                     Text("No Notes")
                 }
                 
-                List(selection: $noteId) {
-                    Section {
-                        ForEach(notes, id: \.self) { note in
-                            NavigationLink(value: note.id, label: {
-                                VStack {
-                                    Text(note.title)
-                                }
-                            })
-                        }
-                    } header: {
-                        Text("Notes")
-                    }
+                if let folderTitle = folder?.title {
+                    NoteListView(folderTitle: folderTitle, notes: .constant(notes), noteId: $noteId)
+                        .environmentObject(folderManager)
+                } else {
+                    NoteListView(folderTitle: "All", notes: .constant(notes), noteId: $noteId)
+                        .environmentObject(folderManager)
                 }
-#if os(iOS)
-                .navigationTitle(folder?.title ?? "All")
-#endif
             }
         } detail: {
             // Note View

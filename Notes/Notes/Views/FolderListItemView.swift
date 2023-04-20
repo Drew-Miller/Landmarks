@@ -46,7 +46,7 @@ struct FolderListItemView: View {
             }
         })
         .disabled(editMode.isEditing && folder.required)
-        .moveDisabled(folder.required)
+        //.moveDisabled(folder.required)
         .onAppear {
             folderTitle = folder.title
         }

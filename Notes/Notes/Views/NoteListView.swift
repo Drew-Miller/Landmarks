@@ -13,6 +13,7 @@ struct NoteListView: View {
     let notes: [Note]
     @Binding var noteId: UUID?
     @State var search = ""
+    @State var createNote = false
     
     var body: some View {
         List {
@@ -60,14 +61,15 @@ struct NoteListView: View {
             ToolbarItemGroup(placement: .bottomBar) {
                 Spacer()
 
-                // Create new folder
+                // Create new note
                 Button {
                     folderManager.createNote(note: Note())
                 } label: {
                     Label("New Note", systemImage: "square.and.pencil")
-                    NavigationLink(isActive: $createNote) {
-                        
-                    }
+//                    NavigationLink(
+//                        destination: NoteView().environmentObject(folderManager()),
+//                        isActive: $createNote
+//                    ).hidden()
                 }
             }
         }

@@ -9,9 +9,10 @@ import SwiftUI
 
 struct FolderListView: View {
     @EnvironmentObject var folderManager: FolderManager
-    @State var editMode = EditMode.inactive
     @Binding var folderId: UUID?
-    @Binding var createNote = false
+    @State var editMode = EditMode.inactive
+    @State var createNote = false
+    @State var search = ""
     
     var body: some View {
         // Folder Selection View
@@ -29,6 +30,7 @@ struct FolderListView: View {
             }
         }
         .navigationTitle("Folders")
+        .searchable(text: $search)
         .environment(\.editMode, $editMode)
         .moveDisabled(false)
         .deleteDisabled(true)
@@ -65,21 +67,9 @@ struct FolderListView: View {
                     folderManager.addFolder(title: "New Folder")
                 } label: {
                     Label("New Folder", systemImage: "folder.badge.plus")
-                    NavigationLink()
                 }
                 
                 Spacer()
-                
-                // Create new note
-                Button {
-                    folderManager.createNote(note: Note(), folder: folder)
-                } label: {
-                    Label("New Note", systemImage: "square.and.pencil")
-                    NavigationLink(
-                        destination: NoteView().environmentObject(folderManager()),
-                        isActive: $createNote
-                    ).hidden()
-                }
             }
         }
     }

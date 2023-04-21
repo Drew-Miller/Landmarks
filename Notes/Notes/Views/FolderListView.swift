@@ -10,6 +10,7 @@ import SwiftUI
 struct FolderListView: View {
     @EnvironmentObject var folderManager: FolderManager
     @Binding var folderId: UUID?
+    @Binding var noteId: UUID?
     @State var editMode = EditMode.inactive
     @State var createNote = false
     @State var search = ""
@@ -70,6 +71,15 @@ struct FolderListView: View {
                 }
                 
                 Spacer()
+                
+                // Create new note
+                Button {
+                    let note = Note()
+                    folderManager.createNote(note: note)
+                    noteId = note.id
+                } label: {
+                    Label("New Note", systemImage: "square.and.pencil")
+                }
             }
         }
     }

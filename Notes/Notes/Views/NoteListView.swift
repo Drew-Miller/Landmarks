@@ -9,36 +9,23 @@ import SwiftUI
 
 struct NoteListView: View {
     @EnvironmentObject var folderManager: FolderManager
-    let folderTitle: String
-    let notes: [Note]
+    @Binding var folder: Folder
     @Binding var noteId: UUID?
     @State var search = ""
     @State var createNote = false
     
     var body: some View {
-        List {
-            ForEach(searchResults, id: \.self) { note in
-                NavigationLink {
-                    NoteView(note: .constant(note))
+        NavigationStack {
+            List(selection: $noteId) {
+                ForEach(folder.notes, id: \.self) { note in
+                    NoteListItemView(note: note, folderTitle: folder.title)
                         .environmentObject(folderManager)
-                } label: {
-                    Text(note.title)
-                }
-                
-                NavigationLink {
-                    NoteView(note: .constant(note))
-                        .environmentObject(folderManager)
-                } label: {
-                    Text(note.title)
-                }
-                NavigationLink {
-                    NoteView(note: .constant(note))
-                        .environmentObject(folderManager)
-                } label: {
-                    Text(note.title)
                 }
             }
         }
+#if os(iOS)
+        .navigationTitle(folder.title)
+#endif
         .listStyle(.sidebar)
         .searchable(text: $search)
         .moveDisabled(false)
@@ -46,10 +33,12 @@ struct NoteListView: View {
         .toolbar {
             // Top Toolbar
             ToolbarItem(placement: .automatic) {
-                Button {
-                    withAnimation {
-                        // editMode = .active
-                        print("hello, world")
+                // Options menu
+                Menu {
+                    Button {
+                        print("hello")
+                    } label: {
+                        Label("Rename", systemImage: "pencil")
                     }
                 } label: {
                     Label("Options", systemImage: "ellipsis.circle")
@@ -60,39 +49,28 @@ struct NoteListView: View {
             // Bottom Toolbar
             ToolbarItemGroup(placement: .bottomBar) {
                 Spacer()
-
+                
                 // Create new note
                 Button {
-                    folderManager.createNote(note: Note())
+                    let note = Note()
+                    folderManager.createNote(note: note, folder: folder)
+                    noteId = note.id
                 } label: {
                     Label("New Note", systemImage: "square.and.pencil")
-//                    NavigationLink(
-//                        destination: NoteView().environmentObject(folderManager()),
-//                        isActive: $createNote
-//                    ).hidden()
                 }
             }
         }
-#if os(iOS)
-        .navigationTitle(folderTitle)
-#endif
         
-    }
-    
-    var searchResults: [Note] {
-        if search.isEmpty {
-            return notes
-        } else {
-            return notes.filter { $0.text.contains(search) }
-        }
     }
 }
 
 #if DEBUG
 struct NoteListView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
-        ContentView()
+        NoteListView(folder: .constant(FolderManager().folders[0]), noteId: .constant(UUID()))
+            .environmentObject(FolderManager())
+        NoteListView(folder: .constant(FolderManager().folders[0]), noteId: .constant(UUID()))
+            .environmentObject(FolderManager())
             .previewInterfaceOrientation(.landscapeLeft)
     }
 }

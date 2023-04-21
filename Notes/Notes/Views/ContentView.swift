@@ -39,7 +39,7 @@ struct ContentView: View {
     
     var body: some View {
         NavigationSplitView(columnVisibility: $visibility) {
-            FolderListView(folderId: $folderId)
+            FolderListView(folderId: $folderId, noteId: $noteId)
                 .environmentObject(folderManager)
         } content: {
             // Notes Selection View
@@ -48,8 +48,11 @@ struct ContentView: View {
                     Text("No Notes")
                 }
                 
-                NoteListView(folderTitle: folder?.title ?? "All Notes", notes: notes, noteId: $noteId)
-                    .environmentObject(folderManager)
+                if let folder = folder {
+                    NoteListView(folder: .constant(folder), noteId: $noteId)
+                        .environmentObject(folderManager)
+                }
+                
             }
         } detail: {
             // Note View
@@ -61,6 +64,7 @@ struct ContentView: View {
                 }
             }
         }
+        .searchable(text: $search)
     }
 }
 

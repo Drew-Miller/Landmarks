@@ -11,7 +11,7 @@ struct FolderListItemView: View {
     @EnvironmentObject var folderManager: FolderManager
     @Binding var editMode: EditMode
     @State var isPresenting = false
-    @State var folderTitle = ""
+    @State var rename = ""
     let folder: Folder
     
     var body: some View {
@@ -48,7 +48,7 @@ struct FolderListItemView: View {
         .disabled(editMode.isEditing && folder.required)
         .moveDisabled(folder.required)
         .onAppear {
-            folderTitle = folder.title
+            rename = folder.title
         }
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
@@ -63,20 +63,20 @@ struct FolderListItemView: View {
             isPresented: $isPresenting
         ) {
             Button(role: .cancel) {
-                folderTitle = folder.title
+                rename = folder.title
                 isPresenting = false
             } label: {
                 Label("Cancel", systemImage: "close")
                     .labelStyle(.titleOnly)
             }
             Button {
-                folderManager.renameFolder(folder: folder, name: folderTitle)
+                folderManager.renameFolder(folder: folder, name: rename)
             } label: {
                 Label("Save", systemImage: "square.and.down.arrow'")
                     .labelStyle(.titleOnly)
             }
             // Any view other than Button would be ignored
-            TextField("Rename Folder", text: $folderTitle)
+            TextField("Rename Folder", text: $rename)
         }
     }
 }

@@ -14,13 +14,16 @@ struct NoteListItemView: View {
 
     var body: some View {
         NavigationLink(value: note.id, label: {
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 7) {
                 Text(note.title)
-                    .font(.headline)
+                    .font(.subheadline)
+                    .fontWeight(.bold)
                 
                 Text(!note.text.isEmpty ? note.text : "No text")
+                    .font(.subheadline)
                 
-                Label(folderTitle, systemImage: "folder")
+//                Label(folderTitle, systemImage: "folder")
+//                    .font(.subheadline)
             }
         })
         .swipeActions(edge: .trailing) {

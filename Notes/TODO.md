@@ -1,5 +1,7 @@
 # TODO
 
-1. Read and write stored data
-2. Material background for the sidebar
-3. Header controls
+1. Text Area editors
+2. Material backgrounds
+3. Searchable
+4. Tab bar vs. sidebar (iPhones vs. iPad)
+5. Custom Tab bar

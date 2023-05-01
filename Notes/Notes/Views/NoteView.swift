@@ -9,7 +9,7 @@ import SwiftUI
 
 struct NoteView: View {
     @StateObject var folderManager = FolderManager()
-    @Binding var note: Note
+    @Binding var note: Note?
     @State var text = ""
     
     var body: some View {
@@ -19,10 +19,16 @@ struct NoteView: View {
                 .padding()
         }
         .onAppear {
-            text = note.text
+            if let note = note {
+                text = note.text
+            } else {
+                text = "Hello, world!"
+            }
         }
         .onChange(of: text) { text in
-            folderManager.saveNote(note: note, text: text)
+            if let note = note {
+                folderManager.updateNote(note, text: text)
+            }
         }
     }
 }

@@ -9,22 +9,22 @@ import SwiftUI
 
 struct FolderListView: View {
     @EnvironmentObject var folderManager: FolderManager
-    @Binding var folderId: UUID?
-    @Binding var noteId: UUID?
+    @Binding var folder: Folder?
+    @Binding var note: Note?
     @State var editMode = EditMode.inactive
     @State var createNote = false
     @State var search = ""
     
     var body: some View {
         // Folder Selection View
-        List(selection: $folderId) {
+        List(selection: $folder) {
             Section {
-                ForEach(folderManager.folders, id: \.self) { folder in
-                    FolderListItemView(editMode: $editMode, folder: folder)
+                ForEach(folderManager.allFolders, id: \.self) { folder in
+                    FolderListItemView(folder: folder, editMode: $editMode)
                         .environmentObject(folderManager)
                 }
                 .onMove { from, to in
-                    folderManager.moveFolder(from: from, to: to)
+                    folderManager.move(from: from, to: to)
                 }
             } header: {
                 Text("My Folders")
@@ -39,22 +39,16 @@ struct FolderListView: View {
             // Top Toolbar
             ToolbarItem(placement: .automatic) {
                 // Edit Button
-                if editMode.isEditing {
-                    Button(role: .cancel) {
-                        withAnimation {
-                            editMode = .inactive
-                        }
-                    } label: {
+                Button {
+                    withAnimation {
+                        editMode = editMode.isEditing ? .inactive : .active
+                    }
+                } label: {
+                    if editMode.isEditing {
                         Label("Done", systemImage: "check")
                             .labelStyle(.titleOnly)
                             .fontWeight(.bold)
-                    }
-                } else {
-                    Button {
-                        withAnimation {
-                            editMode = .active
-                        }
-                    } label: {
+                    } else {
                         Label("Edit", systemImage: "square.and.pencil")
                             .labelStyle(.titleOnly)
                     }
@@ -65,7 +59,7 @@ struct FolderListView: View {
             ToolbarItemGroup(placement: .bottomBar) {
                 // Create new folder
                 Button {
-                    folderManager.addFolder(title: "New Folder")
+                    folderManager.create(title: "New Folder")
                 } label: {
                     Label("New Folder", systemImage: "folder.badge.plus")
                 }
@@ -74,9 +68,7 @@ struct FolderListView: View {
                 
                 // Create new note
                 Button {
-                    let note = Note()
-                    folderManager.createNote(note: note)
-                    noteId = note.id
+                    note = folderManager.createNote()
                 } label: {
                     Label("New Note", systemImage: "square.and.pencil")
                 }

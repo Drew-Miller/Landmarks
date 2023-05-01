@@ -9,22 +9,30 @@ import SwiftUI
 
 struct NoteListView: View {
     @EnvironmentObject var folderManager: FolderManager
-    @Binding var folder: Folder
-    @Binding var noteId: UUID?
+    @Binding var folder: Folder?
+    @Binding var note: Note?
     @State var search = ""
     @State var createNote = false
     
     var body: some View {
         NavigationStack {
-            List(selection: $noteId) {
-                ForEach(folder.notes, id: \.self) { note in
-                    NoteListItemView(note: note, folderTitle: folder.title)
-                        .environmentObject(folderManager)
+            if let folder = folder {
+                if folder.notes.isEmpty {
+                    Text("No Notes")
+                } else {
+                    List(selection: $note) {
+                        ForEach(folder.notes, id: \.self) { note in
+                            NoteListItemView(note: note)
+                                .environmentObject(folderManager)
+                        }
+                    }
                 }
+            } else {
+                Text("No Folder Selected")
             }
         }
 #if os(iOS)
-        .navigationTitle(folder.title)
+        .navigationTitle(folder?.title ?? "Notes")
 #endif
         .listStyle(.sidebar)
         .searchable(text: $search)
@@ -52,12 +60,11 @@ struct NoteListView: View {
                 
                 // Create new note
                 Button {
-                    let note = Note()
-                    folderManager.createNote(note: note, folder: folder)
-                    noteId = note.id
+                    note = folderManager.createNote(folder: folder!)
                 } label: {
                     Label("New Note", systemImage: "square.and.pencil")
                 }
+                .disabled(folder == nil)
             }
         }
         
@@ -67,10 +74,8 @@ struct NoteListView: View {
 #if DEBUG
 struct NoteListView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteListView(folder: .constant(FolderManager().folders[0]), noteId: .constant(UUID()))
-            .environmentObject(FolderManager())
-        NoteListView(folder: .constant(FolderManager().folders[0]), noteId: .constant(UUID()))
-            .environmentObject(FolderManager())
+        ContentView()
+        ContentView()
             .previewInterfaceOrientation(.landscapeLeft)
     }
 }

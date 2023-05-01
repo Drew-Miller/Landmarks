@@ -9,10 +9,10 @@ import SwiftUI
 
 struct FolderListItemView: View {
     @EnvironmentObject var folderManager: FolderManager
+    let folder: Folder
     @Binding var editMode: EditMode
     @State var isPresenting = false
     @State var rename = ""
-    let folder: Folder
     
     var body: some View {
         NavigationLink(value: folder.id, label: {
@@ -30,7 +30,7 @@ struct FolderListItemView: View {
                         
                         // Delete
                         Button {
-                            folderManager.deleteFolder(folder: folder)
+                            folderManager.delete(folder)
                         } label: {
                             Label("Delete", systemImage: "trash")
                         }
@@ -52,7 +52,7 @@ struct FolderListItemView: View {
         }
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
-                folderManager.deleteFolder(folder: folder)
+                folderManager.delete(folder)
             } label: {
                 Label("Delete", systemImage: "trash")
                     .labelStyle(.iconOnly)
@@ -70,7 +70,7 @@ struct FolderListItemView: View {
                     .labelStyle(.titleOnly)
             }
             Button {
-                folderManager.renameFolder(folder: folder, name: rename)
+                folderManager.rename(folder, name: rename)
             } label: {
                 Label("Save", systemImage: "square.and.down.arrow'")
                     .labelStyle(.titleOnly)

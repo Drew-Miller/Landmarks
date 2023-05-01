@@ -10,8 +10,12 @@ import SwiftUI
 struct NoteListItemView: View {
     @EnvironmentObject var folderManager: FolderManager
     let note: Note
-    let folderTitle: String
 
+    var folderTitle: String {
+        let folder = folderManager.getFolder(note: note)
+        return folder?.title ?? "Notes"
+    }
+    
     var body: some View {
         NavigationLink(value: note.id, label: {
             VStack(alignment: .leading, spacing: 7) {
@@ -22,8 +26,8 @@ struct NoteListItemView: View {
                 Text(!note.text.isEmpty ? note.text : "No text")
                     .font(.subheadline)
                 
-//                Label(folderTitle, systemImage: "folder")
-//                    .font(.subheadline)
+                Label(folderTitle, systemImage: "folder")
+                    .font(.subheadline)
             }
         })
         .swipeActions(edge: .trailing) {
@@ -35,7 +39,8 @@ struct NoteListItemView: View {
             }
             
             Button {
-                folderManager.deleteNote(note)
+                // folderManager.deleteNote(note)
+                print("Move Note")
             } label: {
                 Label("Move", systemImage: "folder")
                     .labelStyle(.iconOnly)
@@ -48,8 +53,8 @@ struct NoteListItemView: View {
 #if DEBUG
 struct NoteListItemView_Previews: PreviewProvider {
     static var previews: some View {
-        NoteListItemView(note: Note(), folderTitle: "All Notes")
-        NoteListItemView(note: Note(), folderTitle: "All Notes")
+        ContentView()
+        ContentView()
             .previewInterfaceOrientation(.landscapeLeft)
     }
 }

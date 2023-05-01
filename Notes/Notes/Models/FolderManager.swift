@@ -11,8 +11,14 @@ import SwiftUI
 @MainActor
 final class FolderManager: ObservableObject {
     @AppStorage("folders") private var foldersData: Data?
+    @AppStorage("notes") private var notesData: Data?
     
-    private var myFolders: [Folder] {
+    private var unfiledNotes: [Note] {
+        get { return JSONData.decodeArray(data: notesData, class: Note.self) }
+        set { JSONData.encode(encode: newValue) { encoded in notesData = encoded} }
+    }
+    
+    private var folders: [Folder] {
         get { return JSONData.decodeArray(data: foldersData, class: Folder.self) }
         set { JSONData.encode(encode: newValue) { encoded in foldersData = encoded} }
     }
@@ -21,14 +27,19 @@ final class FolderManager: ObservableObject {
         return [Folder(title: "All Notes", notes: allNotes, required: true)]
     }
     
-    var folders: [Folder] {
-        var folders = defaultFolders
-        folders.append(contentsOf: myFolders)
-        return folders
+    var allFolders: [Folder] {
+        var allFolders = defaultFolders
+        allFolders.append(contentsOf: folders)
+        return allFolders
     }
     
     var allNotes: [Note] {
-        myFolders.flatMap { $0.notes }
+        var notes = folders.flatMap { $0.notes }
+        notes.append(contentsOf: unfiledNotes)
+        notes = notes.sorted {
+            $0.modified > $1.modified
+        }
+        return notes
     }
     
     func allTags() -> Set<String> {
@@ -41,132 +52,116 @@ final class FolderManager: ObservableObject {
     
     init() {
         if let data = foldersData,
-           let savedFolders = try? JSONDecoder().decode([Folder].self, from: data) {
-            myFolders = savedFolders
+           let folders = try? JSONDecoder().decode([Folder].self, from: data) {
+            self.folders = folders
         }
         
-        if !folderExists(withTitle: "Notes") {
-            // Add some sample folders
-            let notesFolder = Folder(title: "Notes", notes: [], required: true)
-            
-            let defaultFolders = [notesFolder]
-            
-            if myFolders.isEmpty {
-                myFolders = defaultFolders
-            } else {
-                myFolders.insert(contentsOf: defaultFolders, at: 0)
-            }
-        }
-        
-        if let index = folderIndex(withTitle: "Notes") {
-            var notesFolder = myFolders[index]
-            notesFolder.required = true
-            myFolders[index] = notesFolder
-            guard notesFolder.notes.isEmpty else {
-                return
-            }
-            
-            createNote(note: Note())
+        if let data = notesData,
+           let notes = try? JSONDecoder().decode([Note].self, from: data) {
+            unfiledNotes = notes
         }
     }
     
-    private func folderIndex(withTitle title: String) -> Int? {
-        return myFolders.firstIndex(where: {
+    private func firstIndex(withTitle title: String) -> Int? {
+        return folders.firstIndex(where: {
             $0.title.caseInsensitiveCompare(title) == .orderedSame
         })
     }
     
-    private func folderExists(withTitle title: String) -> Bool {
-        return folderIndex(withTitle: title) != nil
+    private func exists(withTitle title: String) -> Bool {
+        return firstIndex(withTitle: title) != nil
     }
     
-    private func getContainingFolder(note: Note, index: Bool = false) -> Folder? {
-        return myFolders.first(where: { $0.hasNote(note) })
-            
-    }
-    
-    func folder(id: UUID) -> Folder? {
-        let folders = myFolders
+    func get(id: UUID) -> Folder? {
         return folders.first(where: { $0.id == id })
     }
     
-    func addFolder(title: String) {
-        guard !folderExists(withTitle: title) else {
+    func create(title: String) {
+        guard !exists(withTitle: title) else {
             return
         }
         
-        let newFolder = Folder(title: title, notes: [])
-        myFolders.append(newFolder)
+        let folder = Folder(title: title, notes: [])
+        folders.append(folder)
     }
     
-    func renameFolder(folder: Folder, name: String) {
-        if let folderIndex = folderIndex(withTitle: folder.title) {
-            var folder = folder
-            folder.title = name
-            myFolders[folderIndex] = folder
+    func delete(_ folder: Folder) {
+        if let index = folders.firstIndex(where: { $0.id == folder.id && !$0.required }) {
+            folders.remove(at: index)
         }
     }
     
-    func moveFolder(from source: IndexSet, to destination: Int) {
+    func rename(_ folder: Folder, name: String) {
+        if let index = firstIndex(withTitle: folder.title) {
+            var folder = folder
+            folder.title = name
+            folders[index] = folder
+        }
+    }
+    
+    func move(from source: IndexSet, to destination: Int) {
         let modifiedSource = IndexSet(source.map { $0 - defaultFolders.count }) // remove the default folders from the indices
-        myFolders.move(fromOffsets: modifiedSource.filteredIndexSet {
-            !myFolders[$0].required
+        folders.move(fromOffsets: modifiedSource.filteredIndexSet {
+            !folders[$0].required
         }, toOffset: destination - defaultFolders.count) // subtract the default folders indices
     }
     
-    func deleteFolder(folder: Folder) {
-        if let index = myFolders.firstIndex(where: { $0.id == folder.id && !$0.required }) {
-            myFolders.remove(at: index)
-        }
+    func getFolder(note: Note) -> Folder? {
+        return folders.first { $0.exists(note: note) }
     }
     
-    func createNote(note: Note, folder: Folder? = nil) {
-        if let folder = folder, let index = folderIndex(withTitle: folder.title) {
-            var notesFolder = myFolders[index]
-            notesFolder.notes.append(note)
-            myFolders[index] = notesFolder
-            return
+    func createNote(folder: Folder? = nil) -> Note {
+        let note = Note()
+        if folder != nil, let index = firstIndex(withTitle: folder!.title) {
+            var folder = folders[index]
+            folder.notes.append(note)
+            folders[index] = folder
+            return note
         }
         
-        if let index = folderIndex(withTitle: "Notes") {
-            var notesFolder = myFolders[index]
-            notesFolder.notes.append(note)
-            myFolders[index] = notesFolder
-        }
-    }
-    
-    func moveNoteToFolder(note: Note, to destination: Folder) {
-        guard var sourceFolder = getContainingFolder(note: note) else {
-            print("Error: Failed to find source folder")
-            return
-        }
-        
-        if let index = sourceFolder.noteIndex(note.id), let destinationIndex = myFolders.firstIndex(where: { destination.id == $0.id }) {
-            sourceFolder.notes.remove(at: index)
-            myFolders[destinationIndex].notes.append(note)
-        }
-    }
-    
-    func saveNote(note: Note, text: String) {
-        if var folder = getContainingFolder(note: note), let folderIndex = folderIndex(withTitle: folder.title), let noteIndex = folder.noteIndex(note.id) {
-            // Note is already in a folder, update the folder
-            var updatedNote = note
-            updatedNote.text = text
-            updatedNote.modified = Date()
-            folder.notes[noteIndex] = updatedNote
-            myFolders[folderIndex] = folder
-        }
+        unfiledNotes.append(note)
+        return note
     }
     
     func deleteNote(_ note: Note) {
-        if var folder = getContainingFolder(note: note), let folderIndex = folderIndex(withTitle: folder.title), let noteIndex = folder.noteIndex(note.id) {
+        if var folder = getFolder(note: note), let folderIndex = firstIndex(withTitle: folder.title), let noteIndex = folder.index(id: note.id) {
             // Note is already in a folder, update the folder
             folder.notes.remove(at: noteIndex)
-            myFolders[folderIndex] = folder
-            
-            if allNotes.isEmpty {
-                createNote(note: Note())
-            }
+            folders[folderIndex] = folder
+            return
+        }
+        
+        if let noteIndex = unfiledNotes.firstIndex(where: { $0.id == note.id }) {
+            unfiledNotes.remove(at: noteIndex)
         }
     }
+    
+    func updateNote(_ note: Note, text: String) {
+        var updatedNote = note
+        updatedNote.text = text
+        updatedNote.modified = Date()
+        
+        if var folder = getFolder(note: note), let folderIndex = firstIndex(withTitle: folder.title), let noteIndex = folder.index(id: note.id) {
+            // Note is already in a folder, update the folder
+            folder.notes[noteIndex] = updatedNote
+            folders[folderIndex] = folder
+            return
+        }
+        
+        if let noteIndex = unfiledNotes.firstIndex(where: { $0.id == note.id }) {
+            unfiledNotes[noteIndex] = updatedNote
+        }
+    }
+    
+//    func moveNote(note: Note, to destination: Folder) {
+//        guard var sourceFolder = getContainingFolder(note: note) else {
+//            print("Error: Failed to find source folder")
+//            return
+//        }
+//
+//        if let index = sourceFolder.noteIndex(note.id), let destinationIndex = myFolders.firstIndex(where: { destination.id == $0.id }) {
+//            sourceFolder.notes.remove(at: index)
+//            myFolders[destinationIndex].notes.append(note)
+//        }
+//    }
 }

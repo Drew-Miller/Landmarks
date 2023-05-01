@@ -17,17 +17,18 @@ struct Folder: Identifiable, Hashable, Codable {
         case id, title, notes, required
     }
     
-    func note(_ id: UUID) -> Note? {
+    func get(id: UUID) -> Note? {
         let note = notes.first(where: { $0.id == id })
         return note
     }
     
-    func noteIndex(_ id: UUID) -> Int? {
+    func index(id: UUID) -> Int? {
         let index = notes.firstIndex(where: { $0.id == id })
         return index
     }
     
-    func hasNote(_ note: Note) -> Bool {
-        return noteIndex(note.id) != nil
+    func exists(note: Note) -> Bool {
+        let hasNote = get(id: note.id) != nil
+        return hasNote
     }
 }

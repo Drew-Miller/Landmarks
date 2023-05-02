@@ -17,14 +17,14 @@ struct NoteListView: View {
     var body: some View {
         NavigationStack {
             List(selection: $note) {
-                if folder == nil || folder!.notes.isEmpty {
+                if (folder?.notes ?? folderManager.allNotes).isEmpty {
                     Text("ListFix")
                         .hidden()
                         .accessibility(hidden: true)
                         .listRowBackground(Color.clear)
                 }
                 
-                ForEach(folder?.notes ?? [], id: \.self) { note in
+                ForEach(folder?.notes ?? folderManager.allNotes, id: \.self) { note in
                     NoteListItemView(note: note)
                         .environmentObject(folderManager)
                 }

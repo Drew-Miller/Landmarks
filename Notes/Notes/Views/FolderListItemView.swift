@@ -9,13 +9,13 @@ import SwiftUI
 
 struct FolderListItemView: View {
     @EnvironmentObject var folderManager: FolderManager
-    let folder: Folder
+    @Binding var folder: Folder
     @Binding var editMode: EditMode
     @State var isPresenting = false
     @State var rename = ""
     
     var body: some View {
-        NavigationLink(value: folder.id, label: {
+        NavigationLink(value: folder, label: {
             Label(folder.title, systemImage: "folder")
             HStack {
                 Spacer()
@@ -47,16 +47,18 @@ struct FolderListItemView: View {
         })
         .disabled(editMode.isEditing && folder.required)
         .moveDisabled(folder.required)
+        .swipeActions(edge: .trailing) {
+            if !folder.required {
+                Button(role: .destructive) {
+                    folderManager.delete(folder)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                        .labelStyle(.iconOnly)
+                }
+            }
+        }
         .onAppear {
             rename = folder.title
-        }
-        .swipeActions(edge: .trailing) {
-            Button(role: .destructive) {
-                folderManager.delete(folder)
-            } label: {
-                Label("Delete", systemImage: "trash")
-                    .labelStyle(.iconOnly)
-            }
         }
         .alert(
             "Rename Folder",

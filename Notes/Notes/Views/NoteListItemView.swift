@@ -17,7 +17,7 @@ struct NoteListItemView: View {
     }
     
     var body: some View {
-        NavigationLink(value: note.id, label: {
+        NavigationLink(value: note, label: {
             VStack(alignment: .leading, spacing: 7) {
                 Text(note.title)
                     .font(.subheadline)

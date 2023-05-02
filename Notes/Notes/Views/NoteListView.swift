@@ -17,6 +17,13 @@ struct NoteListView: View {
     var body: some View {
         NavigationStack {
             List(selection: $note) {
+                if folder == nil || folder!.notes.isEmpty {
+                    Text("ListFix")
+                        .hidden()
+                        .accessibility(hidden: true)
+                        .listRowBackground(Color.clear)
+                }
+                
                 ForEach(folder?.notes ?? [], id: \.self) { note in
                     NoteListItemView(note: note)
                         .environmentObject(folderManager)
@@ -58,9 +65,6 @@ struct NoteListView: View {
                 }
                 .disabled(folder == nil)
             }
-        }
-        .onAppear {
-            folder = folderManager.get(id: folder?.id ?? UUID()) ?? nil
         }
     }
 }

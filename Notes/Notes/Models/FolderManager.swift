@@ -46,8 +46,9 @@ final class FolderManager: ObservableObject {
         return tags
     }
     
+    private var allNotesFolderId = UUID()
     private var defaultFolders: [Folder] {
-        return [Folder(title: "All Notes", notes: allNotes, required: true)]
+        return [Folder(id: allNotesFolderId, title: "All Notes", notes: allNotes, required: true)]
     }
     
     init() {

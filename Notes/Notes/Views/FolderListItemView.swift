@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FolderListItemView: View {
     @EnvironmentObject var folderManager: FolderManager
-    @Binding var folder: Folder
+    let folder: Folder
     @Binding var editMode: EditMode
     @State var isPresenting = false
     @State var rename = ""

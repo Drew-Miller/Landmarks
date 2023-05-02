@@ -16,19 +16,11 @@ struct NoteListView: View {
     
     var body: some View {
         NavigationStack {
-            if let folder = folder {
-                if folder.notes.isEmpty {
-                    Text("No Notes")
-                } else {
-                    List(selection: $note) {
-                        ForEach(folder.notes, id: \.self) { note in
-                            NoteListItemView(note: note)
-                                .environmentObject(folderManager)
-                        }
-                    }
+            List(selection: $note) {
+                ForEach(folder?.notes ?? [], id: \.self) { note in
+                    NoteListItemView(note: note)
+                        .environmentObject(folderManager)
                 }
-            } else {
-                Text("No Folder Selected")
             }
         }
 #if os(iOS)
@@ -67,7 +59,9 @@ struct NoteListView: View {
                 .disabled(folder == nil)
             }
         }
-        
+        .onAppear {
+            folder = folderManager.get(id: folder?.id ?? UUID()) ?? nil
+        }
     }
 }
 

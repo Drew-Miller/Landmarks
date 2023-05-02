@@ -15,16 +15,12 @@ final class FolderManager: ObservableObject {
     
     private var unfiledNotes: [Note] {
         get { return JSONData.decodeArray(data: notesData, class: Note.self) }
-        set { JSONData.encode(encode: newValue) { encoded in notesData = encoded} }
+        set { JSONData.encode(encode: newValue) { encoded in notesData = encoded } }
     }
     
     private var folders: [Folder] {
         get { return JSONData.decodeArray(data: foldersData, class: Folder.self) }
         set { JSONData.encode(encode: newValue) { encoded in foldersData = encoded} }
-    }
-    
-    private var defaultFolders: [Folder] {
-        return [Folder(title: "All Notes", notes: allNotes, required: true)]
     }
     
     var allFolders: [Folder] {
@@ -48,6 +44,10 @@ final class FolderManager: ObservableObject {
         allNotes.forEach { tags.formUnion($0.getTags()) }
         
         return tags
+    }
+    
+    private var defaultFolders: [Folder] {
+        return [Folder(title: "All Notes", notes: allNotes, required: true)]
     }
     
     init() {

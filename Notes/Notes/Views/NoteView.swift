@@ -10,19 +10,24 @@ import SwiftUI
 struct NoteView: View {
     @StateObject var folderManager = FolderManager()
     @Binding var note: Note?
-    @State var text = ""
+    @State var text = "Hello, world!"
+    @FocusState var focused: Bool
     
     var body: some View {
         VStack {
-            TextEditor(text: $text)
-                .border(Color.gray, width: 1)
-                .padding()
+            ScrollView {
+                TextEditor(text: $text)
+                    .focused($focused)
+                    .scrollContentBackground(.hidden)
+                    .background(.red)
+            }
+            .onTapGesture {
+                focused = true
+            }
         }
-        .onAppear {
+        .onChange(of: note) { note in
             if let note = note {
                 text = note.text
-            } else {
-                text = "Hello, world!"
             }
         }
         .onChange(of: text) { text in
